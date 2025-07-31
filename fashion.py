@@ -160,13 +160,8 @@ if uploaded_file:
 
         # ── Row 1 : images ───────────────────────────────────────────────────
         st.header("🖼️ Image Analysis")
-        # Added middle separator column with vertical line
-        col1, col_sep1, col2 = st.columns([1, 0.02, 1])
-
-        with col_sep1:
-            st.markdown(
-                "<div style='height:100%; border-left:1px solid #6E6E6E;'></div>",
-                unsafe_allow_html=True)
+        # Create columns with a narrow one in the middle for the vertical line
+        col1, v_line_col1, col2 = st.columns([5, 0.5, 5])
 
         with col1:
             c1, c2, c3 = st.columns([1,3,1])
@@ -175,6 +170,13 @@ if uploaded_file:
                 st.markdown(
                     '<p style="text-align:center;">Original Uploaded Image</p>',
                     unsafe_allow_html=True)
+
+        # Add the vertical line in the middle column
+        with v_line_col1:
+            st.markdown(
+                "<div style='writing-mode: vertical-rl; text-orientation: mixed; border-left: 2px solid #6E6E6E; height: 350px; margin: 0 auto;'></div>",
+                unsafe_allow_html=True
+            )
 
         with col2:
             c1, c2, c3 = st.columns([1,3,1])
@@ -189,18 +191,20 @@ if uploaded_file:
 
         # ── Row 2 : results ─────────────────────────────────────────────────
         st.header("✨ Prediction Results")
-        # Added middle separator column with vertical line
-        r1, r_sep2, r2 = st.columns([1, 0.02, 1])
-
-        with r_sep2:
-            st.markdown(
-                "<div style='height:100%; border-left:1px solid #6E6E6E;'></div>",
-                unsafe_allow_html=True)
+        # Create a second set of columns with a vertical line
+        r1, v_line_col2, r2 = st.columns([5, 0.5, 5])
 
         with r1:
             st.subheader("Top Prediction")
             st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
+
+        # Add the second vertical line
+        with v_line_col2:
+            st.markdown(
+                "<div style='writing-mode: vertical-rl; text-orientation: mixed; border-left: 2px solid #6E6E6E; height: 450px; margin: 0 auto;'></div>",
+                unsafe_allow_html=True
+            )
 
         with r2:
             st.subheader("Confidence Scores")

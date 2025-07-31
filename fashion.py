@@ -49,23 +49,26 @@ st.markdown(
     display:flex;
     align-items:center;
     background:#4A4A4A;
-    color:white;
+    color:white !important; /* All text inside is now white */
     border-radius:25px;
     padding:4px 12px;
     transition:box-shadow .2s ease;
 }
 [data-testid="stFileUploaderFile"]>div:first-of-type{
-    color:white!important;
+    /* color property removed, inherited from parent */
     font-size:.9em;
     padding-right:10px;
 }
 
-/* 3.  DELETE (×) BUTTON — gradient colour, pill shape -----------------------*/
+/* 3.  DELETE (×) BUTTON — gradient colour, circle shape ---------------------*/
 [data-testid="stFileUploaderFile"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     border:none;
-    border-radius:25px;            /*  <- pill (matches Browse button)  */
-    padding:4px 8px;
+    /* Make it a perfect circle */
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    padding: 0;
     cursor:pointer;
     transition:transform .2s ease,box-shadow .2s ease;
     display:flex;align-items:center;justify-content:center;
@@ -193,7 +196,6 @@ if uploaded_file:
 
         # ── Row 2 : results ─────────────────────────────────────────────────
         st.header("✨ Prediction Results")
-        # Create three columns: content, divider, content
         r1, r_divider, r2 = st.columns([2, 0.2, 2])
 
         with r1:
@@ -201,7 +203,6 @@ if uploaded_file:
             st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
 
-        # Add the vertical line in the middle column
         with r_divider:
             st.markdown(
                 "<div style='border-left: 1px solid #6E6E6E; height: 350px; margin: auto;'></div>",

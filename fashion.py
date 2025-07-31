@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 st.set_page_config(
     page_title="Fashion Classifier",
     page_icon="👕",
-    layout="wide",  # Use wide layout for better column spacing
+    layout="wide",
     initial_sidebar_state="auto",
 )
 
@@ -94,17 +94,18 @@ if uploaded_file is not None:
         st.header("Image Analysis")
         img_col1, img_col2 = st.columns(2)
         with img_col1:
-            # --- THE FIX FOR IMAGE SIZE IS HERE ---
-            # We create 3 nested columns and place the image in the center one.
-            # This creates empty "spacer" columns on the sides.
             c1, c2, c3 = st.columns([1, 3, 1])
             with c2:
-                st.image(original_image, caption="Original Uploaded Image", use_container_width=True)
+                # --- THE FIX FOR DARKER TEXT IS HERE ---
+                st.image(original_image, use_container_width=True)
+                st.markdown('<p style="text-align: center;">Original Uploaded Image</p>', unsafe_allow_html=True)
         with img_col2:
-            # --- AND HERE AS WELL ---
             c1, c2, c3 = st.columns([1, 3, 1])
             with c2:
-                st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_container_width=True)
+                # --- AND HERE AS WELL ---
+                st.image(processed_image_for_display, use_container_width=True)
+                st.markdown('<p style="text-align: center;">Processed Image (28x28, Inverted)</p>', unsafe_allow_html=True)
+
 
         st.divider()
 

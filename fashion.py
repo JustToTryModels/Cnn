@@ -16,6 +16,35 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
+# --- NEW: Custom CSS for the File Uploader Button ---
+# We adapt the style from your chatbot app to target the st.file_uploader button.
+# The key is using the selector `[data-testid="stFileUploader"] button`.
+st.markdown("""
+<style>
+[data-testid="stFileUploader"] button {
+    background: linear-gradient(90deg, #ff8a00, #e52e71);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 24px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-testid="stFileUploader"] button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 15px rgba(229, 46, 113, 0.4);
+}
+
+[data-testid="stFileUploader"] button:active {
+    transform: scale(0.98);
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # --- Model Loading ---
 @st.cache_resource
 def load_keras_model():
@@ -104,9 +133,6 @@ if uploaded_file is not None:
                 st.image(processed_image_for_display, use_container_width=True)
                 st.markdown('<p style="text-align: center;">Processed Image (28x28, Inverted)</p>', unsafe_allow_html=True)
 
-        # --- THE FIX FOR THE DIVIDER LINE IS HERE ---
-        # We replace st.divider() with a custom styled horizontal rule (<hr>)
-        # You can change the color hex code (e.g., #888888) to make it lighter or darker.
         st.markdown("""<hr style="height:1px;border:none;color:#6E6E6E;background-color:#6E6E6E;" /> """, unsafe_allow_html=True)
 
         # Row 2: Prediction Result and Probabilities Graph

@@ -3,58 +3,71 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image, ImageOps
-import requests, tempfile
+import requests
+import tempfile
 import matplotlib.pyplot as plt
 
-# ──────────────────────────────  CONFIG  ─────────────────────────────────────
+# ── Configuration ─────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Fashion Classifier",
     page_icon="👕",
     layout="wide",
+    initial_sidebar_state="auto",
 )
 
-# ───────────────────────────  CUSTOM  CSS  ───────────────────────────────────
+# ── Custom CSS ────────────────────────────────────────────────────────────────
 st.markdown(
     """
 <style>
-/* 1) “Browse files” button ---------------------------------------------------*/
+/* 1.  “Browse files” button  -------------------------------------------------*/
 [data-testid="stFileUploader"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
-    color:#fff;border:none;border-radius:25px;
-    padding:10px 24px;font-size:1.05rem;font-weight:600;
-    cursor:pointer;transition:transform .2s,box-shadow .2s;
+    color:white;
+    border:none;
+    border-radius:25px;
+    padding:10px 24px;
+    font-size:1.1em;
+    font-weight:bold;
+    cursor:pointer;
+    transition:transform .2s ease,box-shadow .2s ease;
 }
+[data-testid="stFileUploader"] button,
+[data-testid="stFileUploader"] button:hover,
+[data-testid="stFileUploader"] button:focus,
+[data-testid="stFileUploader"] button:active,
+[data-testid="stFileUploader"] button:visited,
+[data-testid="stFileUploader"] button *{color:white!important;}
+
 [data-testid="stFileUploader"] button:hover{
     transform:scale(1.05);
     box-shadow:0 5px 15px rgba(229,46,113,.4);
 }
-[data-testid="stFileUploader"] button:active{transform:scale(.97);}
-[data-testid="stFileUploader"] button *,
-[data-testid="stFileUploader"] button{color:#fff!important;}
+[data-testid="stFileUploader"] button:active{transform:scale(.98);}
 
-/* 2) Uploaded-file “chip” ----------------------------------------------------*/
+/* 2.  Uploaded–file “chip” ---------------------------------------------------*/
 [data-testid="stFileUploaderFile"]{
-    display:flex;align-items:center;
-    background:#4a4a4a;color:#fff;
-    border-radius:25px;padding:4px 12px;
-    transition:box-shadow .2s;
+    display:flex;
+    align-items:center;
+    background:#4A4A4A;
+    color:white;
+    border-radius:25px;
+    padding:4px 12px;
+    transition:box-shadow .2s ease;
 }
-
-/*    2a) File-name -----------------------------------------------------------*/
 [data-testid="stFileUploaderFile"]>div:first-of-type{
-    color:#fff!important;font-size:.9rem;padding-right:10px;
+    color:white!important;
+    font-size:.9em;
+    padding-right:10px;
 }
 
-/*    2b) File-size  (THIS LINE FIXES THE ISSUE) -----------------------------*/
-[data-testid="stFileUploaderFile"]>div:first-of-type span{
-    color:#ffffff !important;
-}
-
-/* 3) Delete (×) button -------------------------------------------------------*/
+/* 3.  DELETE (×) BUTTON — gradient colour, pill shape -----------------------*/
 [data-testid="stFileUploaderFile"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
-    border:none;border-radius:25px;padding:4px 8px;
-    cursor:pointer;transition:transform .2s,box-shadow .2s;
+    border:none;
+    border-radius:25px;            /*  <- pill (matches Browse button)  */
+    padding:4px 8px;
+    cursor:pointer;
+    transition:transform .2s ease,box-shadow .2s ease;
     display:flex;align-items:center;justify-content:center;
 }
 [data-testid="stFileUploaderFile"] button:hover{
@@ -62,9 +75,11 @@ st.markdown(
     box-shadow:0 5px 15px rgba(229,46,113,.4);
 }
 [data-testid="stFileUploaderFile"] button:active{transform:scale(.92);}
-[data-testid="stFileUploaderFile"] button svg{fill:#fff!important;}
 
-/* 4) Focus outline -----------------------------------------------------------*/
+/*  × icon colour — always white                                              */
+[data-testid="stFileUploaderFile"] button svg{fill:white!important;}
+
+/* Chip focus outline ---------------------------------------------------------*/
 [data-testid="stFileUploaderFile"]:focus-within{
     box-shadow:0 0 0 2px rgba(229,46,113,.6);
     outline:none;
@@ -74,9 +89,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ────────────────────────  MODEL  LOAD / CACHE  ──────────────────────────────
+# ── Model loading ─────────────────────────────────────────────────────────────
 @st.cache_resource
 def load_keras_model():
+    """Load pre-trained model from GitHub."""
     url = ("https://github.com/JustToTryModels/Cnn/raw/main/Model/"
            "fashion_mnist_best_model.keras")
     try:
@@ -85,85 +101,110 @@ def load_keras_model():
             with tempfile.NamedTemporaryFile(suffix=".keras", delete=False) as tmp:
                 for chunk in r.iter_content(8192):
                     tmp.write(chunk)
-                model_path = tmp.name
-        return tf.keras.models.load_model(model_path)
+                path = tmp.name
+        return tf.keras.models.load_model(path)
     except Exception as e:
-        st.error("Error loading model."); st.exception(e)
+        st.error("Error loading model.")
+        st.exception(e)
         return None
 
 model = load_keras_model()
 
-# ─────────────────────────────  CONSTANTS  ───────────────────────────────────
-CLASS_NAMES = ["T-shirt/top","Trouser","Pullover","Dress","Coat",
+# ── Class names ───────────────────────────────────────────────────────────────
+class_names = ["T-shirt/top","Trouser","Pullover","Dress","Coat",
                "Sandal","Shirt","Sneaker","Bag","Ankle boot"]
 
-# ────────────────────────────  UTILITIES  ────────────────────────────────────
-def preprocess_image(img: Image.Image):
-    gray  = img.convert("L")
+# ── Image helper ──────────────────────────────────────────────────────────────
+def preprocess_image(image: Image.Image):
+    """Convert to 28×28 grayscale, invert & normalise."""
+    gray  = image.convert("L")
     small = gray.resize((28, 28), Image.Resampling.LANCZOS)
-    inv   = ImageOps.invert(small)                     # white foreground
-    arr   = np.asarray(inv).astype("float32")/255.0    # 0-1
-    return inv, arr.reshape(1,28,28,1)
+    inv   = ImageOps.invert(small)
 
-# ───────────────────────────────  UI  ────────────────────────────────────────
-st.title("👗 Fashion-MNIST Image Classifier")
-st.markdown("Upload a clothing image & let the CNN guess its category.")
-st.markdown("💡 *Tip: centred items on plain backgrounds work best.*")
+    arr = np.asarray(inv).astype("float32")/255.0
+    return inv, arr.reshape(1, 28, 28, 1)
 
-with st.sidebar:
-    st.header("About")
-    st.info(
-        "**Model**: CNN (batch-norm + dropout)  \n"
-        "**Dataset**: Fashion-MNIST  \n"
-        "**Frameworks**: TensorFlow / Keras / Streamlit  \n"
-        "**Repo**: [GitHub](https://github.com/JustToTryModels/Cnn)"
-    )
+# ── UI ────────────────────────────────────────────────────────────────────────
+st.title("👗 Fashion MNIST Image Classifier")
+st.markdown("Upload an image of a clothing item and the model will predict its category.")
+st.markdown("💡 **Tip: centred images with a plain background work best.**")
 
-uploaded = st.file_uploader("Choose an image…", type=["png","jpg","jpeg"])
+st.sidebar.header("About")
+st.sidebar.info(
+    "**Model**: CNN with batch norm & dropout  \n"
+    "**Dataset**: Fashion-MNIST  \n"
+    "**Frameworks**: TensorFlow/Keras & Streamlit  \n"
+    "**Code**: [GitHub](https://github.com/JustToTryModels/Cnn)"
+)
 
-# ───────────────────────────── MAIN LOGIC ────────────────────────────────────
-if uploaded:
+uploaded_file = st.file_uploader(
+    "Choose an image of a fashion item…", type=["jpg", "jpeg", "png"]
+)
+
+# ── Main logic ───────────────────────────────────────────────────────────────
+if uploaded_file:
     if model:
-        orig = Image.open(uploaded)
+        orig_img = Image.open(uploaded_file)
 
         with st.spinner("Classifying…"):
-            disp_img, model_img = preprocess_image(orig)
-            preds   = model.predict(model_img)[0]
-            top_idx = int(np.argmax(preds))
-            top_cls = CLASS_NAMES[top_idx]
-            top_conf= preds[top_idx]*100
+            proc_disp_img, proc_for_model = preprocess_image(orig_img)
+            preds      = model.predict(proc_for_model)[0]
+            top_idx    = np.argmax(preds)
+            top_name   = class_names[top_idx]
+            top_conf   = preds[top_idx] * 100
 
-        # same display dims
-        W,H = 300,300
+        # identical display size
+        DISP = (300, 300)
+        orig_show = orig_img.resize(DISP, Image.Resampling.LANCZOS)
+        proc_show = proc_disp_img.resize(DISP, Image.NEAREST)
+
+        # ── Row 1 : images ───────────────────────────────────────────────────
         st.header("Image Analysis")
-        c1,c2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-        with c1:
-            st.image(orig.resize((W,H), Image.Resampling.LANCZOS))
-            st.caption("Original upload")
-        with c2:
-            st.image(disp_img.resize((W,H), Image.NEAREST))
-            st.caption("Pre-processed (28×28, inverted)")
+        with col1:
+            c1, c2, c3 = st.columns([1,3,1])
+            with c2:
+                st.image(orig_show, width=DISP[0])
+                st.markdown(
+                    '<p style="text-align:center;">Original Uploaded Image</p>',
+                    unsafe_allow_html=True)
 
-        st.divider()
+        with col2:
+            c1, c2, c3 = st.columns([1,3,1])
+            with c2:
+                st.image(proc_show, width=DISP[0])
+                st.markdown(
+                    '<p style="text-align:center;">Processed Image (28×28, inverted)</p>',
+                    unsafe_allow_html=True)
 
-        st.header("Prediction")
-        l,r = st.columns(2)
-        with l:
-            st.subheader("Top guess")
-            st.success(f"Looks like a **{top_cls}**")
+        st.markdown('<hr style="height:1px;border:none;background:#6E6E6E;">',
+                    unsafe_allow_html=True)
+
+        # ── Row 2 : results ─────────────────────────────────────────────────
+        st.header("Prediction Results")
+        r1, r2 = st.columns(2)
+
+        with r1:
+            st.subheader("Top Prediction")
+            st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
-        with r:
-            st.subheader("All probabilities")
-            order = np.argsort(preds)[::-1]
+
+        with r2:
+            st.subheader("Confidence Scores")
+            order  = np.argsort(preds)[::-1]
+            names  = [class_names[i] for i in order]
+            probs  = preds[order]
+
             fig, ax = plt.subplots()
-            ax.barh([CLASS_NAMES[i] for i in order], preds[order],
-                    color="#4da6ff")
-            ax.set_xlim(0,1); ax.invert_yaxis(); ax.set_xlabel("Probability")
-            for bar in ax.patches:
+            bars = ax.barh(names, probs, color="skyblue")
+            ax.set_xlabel("Probability")
+            ax.set_xlim(0, 1)
+            ax.invert_yaxis()
+            for bar in bars:
                 w = bar.get_width()
                 ax.text(w+0.01, bar.get_y()+bar.get_height()/2,
                         f"{w:.1%}", va="center")
             st.pyplot(fig)
     else:
-        st.error("Model not available. Check deployment logs.")
+        st.error("The model is not available. Please check the deployment logs.")

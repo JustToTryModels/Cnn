@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# --- Custom CSS for ALL File Uploader States ---
+# --- Custom CSS for ALL File Uploader States (with Focus Fix) ---
 st.markdown("""
 <style>
 /* 1. STYLE FOR THE INITIAL 'BROWSE FILES' BUTTON */
@@ -47,17 +47,18 @@ st.markdown("""
 [data-testid="stFileUploaderFile"] {
     display: flex;
     align-items: center;
-    background-color: #4A4A4A; /* A neutral dark gray for the chip */
+    background-color: #4A4A4A;
     color: white;
     border-radius: 25px;
     padding: 4px 12px;
+    transition: box-shadow 0.2s ease; /* Add transition for smooth focus effect */
 }
 
 /* 3. STYLE FOR THE FILENAME TEXT INSIDE THE CHIP */
 [data-testid="stFileUploaderFile"] > div:first-of-type {
-    color: white;
+    color: white !important; /* Use !important to override any state changes */
     font-size: 0.9em;
-    padding-right: 10px; /* Space between filename and delete button */
+    padding-right: 10px;
 }
 
 /* 4. STYLE FOR THE DELETE 'X' BUTTON INSIDE THE CHIP */
@@ -73,7 +74,14 @@ st.markdown("""
 }
 
 [data-testid="stFileUploaderFile"] button:hover svg {
-    fill: #ff8a00; /* Change icon color on hover for feedback */
+    fill: #ff8a00;
+}
+
+/* --- THE DEFINITIVE FIX FOR THE FOCUS STATE --- */
+/* This rule applies when the file chip (or anything inside it) gets focus */
+[data-testid="stFileUploaderFile"]:focus-within {
+    box-shadow: 0 0 0 2px rgba(229, 46, 113, 0.6); /* Adds a pink glow */
+    outline: none; /* Removes the default blue/red browser outline */
 }
 
 </style>
@@ -85,7 +93,6 @@ st.markdown("""
 def load_keras_model():
     """
     Loads the pre-trained Keras model from a GitHub URL.
-    This version saves the model to a temporary file before loading.
     """
     model_url = "https://github.com/JustToTryModels/Cnn/raw/main/Model/fashion_mnist_best_model.keras"
     try:
@@ -111,8 +118,7 @@ class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
 # --- Image Preprocessing ---
 def preprocess_image(image):
     """
-    Preprocesses the uploaded image and returns both the displayable
-    processed image and the numpy array for the model.
+    Preprocesses the uploaded image.
     """
     grayscale_img = image.convert('L')
     resized_img = grayscale_img.resize((28, 28), Image.Resampling.LANCZOS)

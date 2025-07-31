@@ -64,8 +64,8 @@ def preprocess_image(image):
 st.title("👗 Fashion MNIST Image Classifier")
 st.markdown("""
     Welcome to the Fashion Classifier! Upload an image of a clothing item, and the model will predict its category.
-    💡 Tip: For best results, use centered images with plain backgrounds
 """)
+st.markdown("""💡 Tip: For best results, use centered images with plain backgrounds""")
 
 st.sidebar.header("About")
 st.sidebar.info("""

@@ -127,7 +127,7 @@ def preprocess_image(image: Image.Image):
 # ── UI ────────────────────────────────────────────────────────────────────────
 st.title("👗 Fashion MNIST Image Classifier")
 st.markdown("Upload an image of a clothing item and the model will predict its category.")
-st.markdown("💡 **Tip: centred images with a plain background work best.**")
+st.markdown("💡 **Tip: Centred images with a plain background work best.**")
 
 st.sidebar.header("About")
 st.sidebar.info(

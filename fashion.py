@@ -19,7 +19,7 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-/* 1.  “Browse files” button  -------------------------------------------------*/
+/* 1.  "Browse files" button  -------------------------------------------------*/
 [data-testid="stFileUploader"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     color:white;
@@ -44,7 +44,7 @@ st.markdown(
 }
 [data-testid="stFileUploader"] button:active{transform:scale(.98);}
 
-/* 2.  Uploaded–file “chip” ---------------------------------------------------*/
+/* 2.  Uploaded–file "chip" ---------------------------------------------------*/
 [data-testid="stFileUploaderFile"]{
     display:flex;
     align-items:center;
@@ -60,21 +60,19 @@ st.markdown(
     padding-right:10px;
 }
 
-/* ── FIX #2 : Make the storage-size text white ------------------------------*/
-[data-testid="stFileUploaderFile"]>div:nth-of-type(2),
-[data-testid="stFileUploaderFile"] span{
+/* Make all text inside the file chip white (including file size) */
+[data-testid="stFileUploaderFile"] div{
     color:white!important;
 }
 
-/* 3.  DELETE (×) BUTTON — gradient colour, circle shape ----------------------*/
-/* ── FIX #1 : perfect circle -------------------------------------------------*/
+/* 3.  DELETE (×) BUTTON — gradient colour, pill shape -----------------------*/
 [data-testid="stFileUploaderFile"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     border:none;
-    width:28px;                 /* equal width & height  */
-    height:28px;                /*  → perfect circle     */
-    border-radius:50%;          /*  <- circle            */
-    padding:0;
+    border-radius:50%;            /*  <- Perfect circle  */
+    width:24px;                   /*  <- Fixed width  */
+    height:24px;                  /*  <- Fixed height  */
+    padding:0;                    /*  <- No padding  */
     cursor:pointer;
     transition:transform .2s ease,box-shadow .2s ease;
     display:flex;align-items:center;justify-content:center;
@@ -85,7 +83,7 @@ st.markdown(
 }
 [data-testid="stFileUploaderFile"] button:active{transform:scale(.92);}
 
-/* × icon colour — always white                                               */
+/*  × icon colour — always white                                              */
 [data-testid="stFileUploaderFile"] button svg{fill:white!important;}
 
 /* Chip focus outline ---------------------------------------------------------*/

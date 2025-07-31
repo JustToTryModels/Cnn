@@ -196,12 +196,12 @@ if uploaded_file:
         r1, r2 = st.columns(2)
 
         with r1:
-            st.subheader("Top Prediction")
+            st.subheader("1. Top Prediction")
             st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
 
         with r2:
-            st.subheader("Confidence Scores")
+            st.subheader("2. Confidence Scores")
             order  = np.argsort(preds)[::-1]
             names  = [class_names[i] for i in order]
             probs  = preds[order]

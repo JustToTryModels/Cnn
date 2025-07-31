@@ -96,18 +96,18 @@ if uploaded_file is not None:
         with img_col1:
             c1, c2, c3 = st.columns([1, 3, 1])
             with c2:
-                # --- THE FIX FOR DARKER TEXT IS HERE ---
                 st.image(original_image, use_container_width=True)
                 st.markdown('<p style="text-align: center;">Original Uploaded Image</p>', unsafe_allow_html=True)
         with img_col2:
             c1, c2, c3 = st.columns([1, 3, 1])
             with c2:
-                # --- AND HERE AS WELL ---
                 st.image(processed_image_for_display, use_container_width=True)
                 st.markdown('<p style="text-align: center;">Processed Image (28x28, Inverted)</p>', unsafe_allow_html=True)
 
-
-        st.divider()
+        # --- THE FIX FOR THE DIVIDER LINE IS HERE ---
+        # We replace st.divider() with a custom styled horizontal rule (<hr>)
+        # You can change the color hex code (e.g., #888888) to make it lighter or darker.
+        st.markdown("""<hr style="height:1px;border:none;color:#6E6E6E;background-color:#6E6E6E;" /> """, unsafe_allow_html=True)
 
         # Row 2: Prediction Result and Probabilities Graph
         st.header("Prediction Results")

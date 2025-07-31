@@ -160,7 +160,13 @@ if uploaded_file:
 
         # ── Row 1 : images ───────────────────────────────────────────────────
         st.header("🖼️ Image Analysis")
-        col1, col2 = st.columns(2)
+        # Added middle separator column with vertical line
+        col1, col_sep1, col2 = st.columns([1, 0.02, 1])
+
+        with col_sep1:
+            st.markdown(
+                "<div style='height:100%; border-left:1px solid #6E6E6E;'></div>",
+                unsafe_allow_html=True)
 
         with col1:
             c1, c2, c3 = st.columns([1,3,1])
@@ -183,7 +189,13 @@ if uploaded_file:
 
         # ── Row 2 : results ─────────────────────────────────────────────────
         st.header("✨ Prediction Results")
-        r1, r2 = st.columns(2)
+        # Added middle separator column with vertical line
+        r1, r_sep2, r2 = st.columns([1, 0.02, 1])
+
+        with r_sep2:
+            st.markdown(
+                "<div style='height:100%; border-left:1px solid #6E6E6E;'></div>",
+                unsafe_allow_html=True)
 
         with r1:
             st.subheader("Top Prediction")

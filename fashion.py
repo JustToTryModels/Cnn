@@ -159,7 +159,7 @@ if uploaded_file:
         proc_show = proc_disp_img.resize(DISP, Image.NEAREST)
 
         # ── Row 1 : images ───────────────────────────────────────────────────
-        st.header("🖼 Image Analysis")
+        st.header("🖼️ Image Analysis")
         col1, col2 = st.columns(2)
 
         with col1:

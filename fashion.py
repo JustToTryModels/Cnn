@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image, ImageOps
 import requests
 import tempfile
+import matplotlib.pyplot as plt # <--- Import Matplotlib
 
 # --- Configuration ---
 st.set_page_config(
@@ -83,10 +84,7 @@ if uploaded_file is not None:
             processed_image_for_display, processed_image_for_model = preprocess_image(original_image)
             prediction = model.predict(processed_image_for_model)
             
-            # Extract raw probabilities for sorting
             pred_probs = prediction[0]
-            
-            # Get top prediction details
             top_class_index = np.argmax(pred_probs)
             top_class_name = class_names[top_class_index]
             top_confidence = pred_probs[top_class_index] * 100
@@ -95,13 +93,13 @@ if uploaded_file is not None:
         st.header("Image Analysis")
         img_col1, img_col2 = st.columns(2)
         with img_col1:
-            st.image(original_image, caption="Original Uploaded Image", use_container_width=True)
+            st.image(original_image, caption="Original Uploaded Image", use_column_width=True)
         with img_col2:
-            st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_container_width=True)
+            st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_column_width=True)
 
         st.divider()
 
-        # Row 2: Prediction Result and Probabilities Table
+        # Row 2: Prediction Result and Probabilities Graph
         st.header("Prediction Results")
         res_col1, res_col2 = st.columns(2)
         with res_col1:
@@ -110,22 +108,26 @@ if uploaded_file is not None:
             st.write(f"Confidence: **{top_confidence:.2f}%**")
             
         with res_col2:
-            st.subheader("All Probabilities (Sorted)")
+            st.subheader("Confidence Scores")
             
-            # *** THE FIX FOR SORTING IS HERE ***
-            # 1. Get the indices that would sort the probabilities in descending order
+            # --- REPLACED TABLE WITH MATPLOTLIB BAR CHART ---
             sorted_indices = np.argsort(pred_probs)[::-1]
-            
-            # 2. Create new sorted lists using these indices
             sorted_class_names = [class_names[i] for i in sorted_indices]
-            sorted_probabilities = [f"{pred_probs[i]*100:.2f}%" for i in sorted_indices]
-            
-            # 3. Create the dataframe from the sorted lists
-            prob_data = {
-                "Fashion Item": sorted_class_names,
-                "Probability": sorted_probabilities
-            }
-            st.dataframe(prob_data, use_container_width=True)
+            sorted_probs = pred_probs[sorted_indices]
+
+            fig, ax = plt.subplots()
+            bars = ax.barh(sorted_class_names, sorted_probs, color='skyblue')
+            ax.set_xlabel('Probability')
+            ax.set_xlim(0, 1)
+            ax.invert_yaxis() # Highest probability on top
+
+            # Add percentage labels to the bars
+            for bar in bars:
+                width = bar.get_width()
+                ax.text(width + 0.01, bar.get_y() + bar.get_height()/2, f'{width:.1%}', va='center')
+
+            st.pyplot(fig)
+            # --- END OF CHART CODE ---
             
     else:
         st.error("The model is not available. Please check the deployment logs.")

@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image, ImageOps
 import requests
 import tempfile
-import matplotlib.pyplot as plt # <--- Import Matplotlib
+import matplotlib.pyplot as plt
 
 # --- Configuration ---
 st.set_page_config(
@@ -94,9 +94,17 @@ if uploaded_file is not None:
         st.header("Image Analysis")
         img_col1, img_col2 = st.columns(2)
         with img_col1:
-            st.image(original_image, caption="Original Uploaded Image", use_container_width =True)
+            # --- THE FIX FOR IMAGE SIZE IS HERE ---
+            # We create 3 nested columns and place the image in the center one.
+            # This creates empty "spacer" columns on the sides.
+            c1, c2, c3 = st.columns([1, 3, 1])
+            with c2:
+                st.image(original_image, caption="Original Uploaded Image", use_container_width=True)
         with img_col2:
-            st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_container_width =True)
+            # --- AND HERE AS WELL ---
+            c1, c2, c3 = st.columns([1, 3, 1])
+            with c2:
+                st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_container_width=True)
 
         st.divider()
 
@@ -111,7 +119,6 @@ if uploaded_file is not None:
         with res_col2:
             st.subheader("Confidence Scores")
             
-            # --- REPLACED TABLE WITH MATPLOTLIB BAR CHART ---
             sorted_indices = np.argsort(pred_probs)[::-1]
             sorted_class_names = [class_names[i] for i in sorted_indices]
             sorted_probs = pred_probs[sorted_indices]
@@ -120,15 +127,13 @@ if uploaded_file is not None:
             bars = ax.barh(sorted_class_names, sorted_probs, color='skyblue')
             ax.set_xlabel('Probability')
             ax.set_xlim(0, 1)
-            ax.invert_yaxis() # Highest probability on top
+            ax.invert_yaxis()
 
-            # Add percentage labels to the bars
             for bar in bars:
                 width = bar.get_width()
                 ax.text(width + 0.01, bar.get_y() + bar.get_height()/2, f'{width:.1%}', va='center')
 
             st.pyplot(fig)
-            # --- END OF CHART CODE ---
             
     else:
         st.error("The model is not available. Please check the deployment logs.")

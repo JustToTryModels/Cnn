@@ -63,7 +63,7 @@ def preprocess_image(image):
 # --- Streamlit App Interface ---
 st.title("👗 Fashion MNIST Image Classifier")
 st.markdown("""
-    Welcome to the Fashion Classifier! Upload an image of a clothing item, and the model will predict its category.
+    Welcome to the Fashion Classifier! Upload an image of a clothing item, and the model will predict its category.\n'💡 Tip: For best results, use centered images with plain backgrounds'
 """)
 
 st.sidebar.header("About")

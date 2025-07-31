@@ -43,7 +43,7 @@ model = load_keras_model()
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
-# --- Image Preprocessing (MODIFIED TO RETURN BOTH IMAGES) ---
+# --- Image Preprocessing ---
 def preprocess_image(image):
     """
     Preprocesses the uploaded image and returns both the displayable
@@ -53,12 +53,10 @@ def preprocess_image(image):
     resized_img = grayscale_img.resize((28, 28), Image.Resampling.LANCZOS)
     inverted_img = ImageOps.invert(resized_img)
     
-    # Prepare the array for the model
     img_array = np.array(inverted_img)
     img_array = img_array.astype('float32') / 255.0
     img_array = img_array.reshape(1, 28, 28, 1)
     
-    # Return both the displayable PIL image and the model-ready array
     return inverted_img, img_array
 
 # --- Streamlit App Interface ---
@@ -81,17 +79,17 @@ if uploaded_file is not None:
     if model is not None:
         original_image = Image.open(uploaded_file)
         
-        # Preprocess the image and make a prediction
         with st.spinner('Classifying...'):
-            # Get both the displayable image and the model input
             processed_image_for_display, processed_image_for_model = preprocess_image(original_image)
-            
             prediction = model.predict(processed_image_for_model)
-            predicted_class_index = np.argmax(prediction)
-            predicted_class_name = class_names[predicted_class_index]
-            confidence = np.max(prediction) * 100
-
-        # --- NEW LAYOUT STRUCTURE ---
+            
+            # Extract raw probabilities for sorting
+            pred_probs = prediction[0]
+            
+            # Get top prediction details
+            top_class_index = np.argmax(pred_probs)
+            top_class_name = class_names[top_class_index]
+            top_confidence = pred_probs[top_class_index] * 100
 
         # Row 1: Original and Processed Images
         st.header("Image Analysis")
@@ -101,20 +99,31 @@ if uploaded_file is not None:
         with img_col2:
             st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_container_width=True)
 
-        st.divider() # Adds a horizontal line for separation
+        st.divider()
 
         # Row 2: Prediction Result and Probabilities Table
         st.header("Prediction Results")
         res_col1, res_col2 = st.columns(2)
         with res_col1:
             st.subheader("Top Prediction")
-            st.success(f"This looks like a **{predicted_class_name}**.")
-            st.write(f"Confidence: **{confidence:.2f}%**")
+            st.success(f"This looks like a **{top_class_name}**.")
+            st.write(f"Confidence: **{top_confidence:.2f}%**")
+            
         with res_col2:
-            st.subheader("All Probabilities")
+            st.subheader("All Probabilities (Sorted)")
+            
+            # *** THE FIX FOR SORTING IS HERE ***
+            # 1. Get the indices that would sort the probabilities in descending order
+            sorted_indices = np.argsort(pred_probs)[::-1]
+            
+            # 2. Create new sorted lists using these indices
+            sorted_class_names = [class_names[i] for i in sorted_indices]
+            sorted_probabilities = [f"{pred_probs[i]*100:.2f}%" for i in sorted_indices]
+            
+            # 3. Create the dataframe from the sorted lists
             prob_data = {
-                "Fashion Item": class_names,
-                "Probability": [f"{p*100:.2f}%" for p in prediction[0]]
+                "Fashion Item": sorted_class_names,
+                "Probability": sorted_probabilities
             }
             st.dataframe(prob_data, use_container_width=True)
             

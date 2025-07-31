@@ -16,9 +16,7 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# --- NEW: Custom CSS for the File Uploader Button ---
-# We adapt the style from your chatbot app to target the st.file_uploader button.
-# The key is using the selector `[data-testid="stFileUploader"] button`.
+# --- Custom CSS with the Hover Fix ---
 st.markdown("""
 <style>
 [data-testid="stFileUploader"] button {
@@ -36,10 +34,12 @@ st.markdown("""
 [data-testid="stFileUploader"] button:hover {
     transform: scale(1.05);
     box-shadow: 0px 5px 15px rgba(229, 46, 113, 0.4);
+    color: white !important; /* <--- THIS IS THE FIX: Keep text white on hover */
 }
 
 [data-testid="stFileUploader"] button:active {
     transform: scale(0.98);
+    color: white !important; /* <--- Also ensure text stays white on click */
 }
 </style>
 """, unsafe_allow_html=True)

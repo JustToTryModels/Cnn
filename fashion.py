@@ -93,9 +93,9 @@ if uploaded_file is not None:
         st.header("Image Analysis")
         img_col1, img_col2 = st.columns(2)
         with img_col1:
-            st.image(original_image, caption="Original Uploaded Image", use_column_width=True)
+            st.image(original_image, caption="Original Uploaded Image", use_container_width =True)
         with img_col2:
-            st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_column_width=True)
+            st.image(processed_image_for_display, caption="Processed Image (28x28, Inverted)", use_container_width =True)
 
         st.divider()
 

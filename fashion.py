@@ -19,7 +19,7 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-/* 1.  "Browse files" button  -------------------------------------------------*/
+/* 1.  “Browse files” button  -------------------------------------------------*/
 [data-testid="stFileUploader"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     color:white;
@@ -44,7 +44,7 @@ st.markdown(
 }
 [data-testid="stFileUploader"] button:active{transform:scale(.98);}
 
-/* 2.  Uploaded–file "chip" ---------------------------------------------------*/
+/* 2.  Uploaded–file “chip” ---------------------------------------------------*/
 [data-testid="stFileUploaderFile"]{
     display:flex;
     align-items:center;
@@ -60,19 +60,12 @@ st.markdown(
     padding-right:10px;
 }
 
-/* Make all text inside the file chip white (including file size) */
-[data-testid="stFileUploaderFile"] div{
-    color:white!important;
-}
-
 /* 3.  DELETE (×) BUTTON — gradient colour, pill shape -----------------------*/
 [data-testid="stFileUploaderFile"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     border:none;
-    border-radius:50%;            /*  <- Perfect circle  */
-    width:24px;                   /*  <- Fixed width  */
-    height:24px;                  /*  <- Fixed height  */
-    padding:0;                    /*  <- No padding  */
+    border-radius:25px;            /*  <- pill (matches Browse button)  */
+    padding:4px 8px;
     cursor:pointer;
     transition:transform .2s ease,box-shadow .2s ease;
     display:flex;align-items:center;justify-content:center;

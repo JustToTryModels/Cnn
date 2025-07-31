@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# --- Custom CSS for ALL File Uploader States (with Focus Fix) ---
+# --- Custom CSS for ALL File Uploader States ---
 st.markdown("""
 <style>
 /* 1. STYLE FOR THE INITIAL 'BROWSE FILES' BUTTON */
@@ -32,41 +32,32 @@ st.markdown("""
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* --- NEW RULE: KEEP TEXT **ALWAYS** WHITE --- */
-[data-testid="stFileUploader"] button,
-[data-testid="stFileUploader"] button:focus,
-[data-testid="stFileUploader"] button:hover,
-[data-testid="stFileUploader"] button:active,
-[data-testid="stFileUploader"] button:visited,
-[data-testid="stFileUploader"] button * {
-    color: white !important;   /* Force white text in every state */
-}
-
 [data-testid="stFileUploader"] button:hover {
     transform: scale(1.05);
     box-shadow: 0px 5px 15px rgba(229, 46, 113, 0.4);
+    color: white !important;
 }
 
 [data-testid="stFileUploader"] button:active {
     transform: scale(0.98);
+    color: white !important;
 }
 
 /* 2. STYLE FOR THE FILE 'CHIP' THAT APPEARS AFTER UPLOAD */
 [data-testid="stFileUploaderFile"] {
     display: flex;
     align-items: center;
-    background-color: #4A4A4A;
+    background-color: #4A4A4A; /* A neutral dark gray for the chip */
     color: white;
     border-radius: 25px;
     padding: 4px 12px;
-    transition: box-shadow 0.2s ease; /* Add transition for smooth focus effect */
 }
 
 /* 3. STYLE FOR THE FILENAME TEXT INSIDE THE CHIP */
 [data-testid="stFileUploaderFile"] > div:first-of-type {
-    color: white !important; /* Use !important to override any state changes */
+    color: white;
     font-size: 0.9em;
-    padding-right: 10px;
+    padding-right: 10px; /* Space between filename and delete button */
 }
 
 /* 4. STYLE FOR THE DELETE 'X' BUTTON INSIDE THE CHIP */
@@ -82,14 +73,9 @@ st.markdown("""
 }
 
 [data-testid="stFileUploaderFile"] button:hover svg {
-    fill: #ff8a00;
+    fill: #ff8a00; /* Change icon color on hover for feedback */
 }
 
-/* --- THE DEFINITIVE FIX FOR THE FOCUS STATE OF THE CHIP --- */
-[data-testid="stFileUploaderFile"]:focus-within {
-    box-shadow: 0 0 0 2px rgba(229, 46, 113, 0.6); /* Adds a pink glow */
-    outline: none; /* Removes the default blue/red browser outline */
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -99,6 +85,7 @@ st.markdown("""
 def load_keras_model():
     """
     Loads the pre-trained Keras model from a GitHub URL.
+    This version saves the model to a temporary file before loading.
     """
     model_url = "https://github.com/JustToTryModels/Cnn/raw/main/Model/fashion_mnist_best_model.keras"
     try:
@@ -124,7 +111,8 @@ class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
 # --- Image Preprocessing ---
 def preprocess_image(image):
     """
-    Preprocesses the uploaded image.
+    Preprocesses the uploaded image and returns both the displayable
+    processed image and the numpy array for the model.
     """
     grayscale_img = image.convert('L')
     resized_img = grayscale_img.resize((28, 28), Image.Resampling.LANCZOS)
@@ -145,9 +133,9 @@ st.markdown("""💡 Tip: For best results, use centered images with plain backgr
 
 st.sidebar.header("About")
 st.sidebar.info("""
-    **Model:** Advanced CNN with Batch Normalization and Dropout.  
-    **Dataset:** Fashion MNIST  
-    **Frameworks:** TensorFlow/Keras & Streamlit  
+    **Model:** Advanced CNN with Batch Normalization and Dropout.
+    **Dataset:** Fashion MNIST
+    **Frameworks:** TensorFlow/Keras & Streamlit
     **Source Code:** [GitHub Repository](https://github.com/JustToTryModels/Cnn)
 """)
 

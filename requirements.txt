@@ -1,6 +1,6 @@
-streamlit
-tensorflow
-numpy
-Pillow
-requests
-matplotlib
+streamlit==1.35.0
+tensorflow==2.16.1
+numpy==1.26.4
+Pillow==10.3.0
+requests==2.32.3
+matplotlib=s=3.9.0

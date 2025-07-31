@@ -37,6 +37,7 @@ st.markdown(
 [data-testid="stFileUploader"] button:active,
 [data-testid="stFileUploader"] button:visited,
 [data-testid="stFileUploader"] button *{color:white!important;}
+
 [data-testid="stFileUploader"] button:hover{
     transform:scale(1.05);
     box-shadow:0 5px 15px rgba(229,46,113,.4);
@@ -59,23 +60,23 @@ st.markdown(
     padding-right:10px;
 }
 
-/* 3.  DELETE (×) BUTTON — same gradient, NOW A PERFECT CIRCLE ---------------*/
+/* 3.  DELETE (×) BUTTON — gradient colour, pill shape -----------------------*/
 [data-testid="stFileUploaderFile"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     border:none;
-    width:32px;               /* equal w & h → circle */
-    height:32px;
-    border-radius:50%;        /* perfect circle */
+    border-radius:25px;            /*  <- pill (matches Browse button)  */
+    padding:4px 8px;
     cursor:pointer;
     transition:transform .2s ease,box-shadow .2s ease;
     display:flex;align-items:center;justify-content:center;
-    padding:0;                /* center the icon neatly */
 }
 [data-testid="stFileUploaderFile"] button:hover{
     transform:scale(1.05);
     box-shadow:0 5px 15px rgba(229,46,113,.4);
 }
 [data-testid="stFileUploaderFile"] button:active{transform:scale(.92);}
+
+/*  × icon colour — always white                                              */
 [data-testid="stFileUploaderFile"] button svg{fill:white!important;}
 
 /* Chip focus outline ---------------------------------------------------------*/
@@ -126,7 +127,7 @@ def preprocess_image(image: Image.Image):
 # ── UI ────────────────────────────────────────────────────────────────────────
 st.title("👗 Fashion MNIST Image Classifier")
 st.markdown("Upload an image of a clothing item and the model will predict its category.")
-st.markdown("💡 *Tip: centred images with a plain background work best.*")
+st.markdown("💡 **Tip: centred images with a plain background work best.**")
 
 st.sidebar.header("About")
 st.sidebar.info(
@@ -152,11 +153,12 @@ if uploaded_file:
             top_name   = class_names[top_idx]
             top_conf   = preds[top_idx] * 100
 
+        # identical display size
         DISP = (300, 300)
         orig_show = orig_img.resize(DISP, Image.Resampling.LANCZOS)
         proc_show = proc_disp_img.resize(DISP, Image.NEAREST)
 
-        # Row 1 : images -------------------------------------------------------
+        # ── Row 1 : images ───────────────────────────────────────────────────
         st.header("Image Analysis")
         col1, col2 = st.columns(2)
 
@@ -179,7 +181,7 @@ if uploaded_file:
         st.markdown('<hr style="height:1px;border:none;background:#6E6E6E;">',
                     unsafe_allow_html=True)
 
-        # Row 2 : results ------------------------------------------------------
+        # ── Row 2 : results ─────────────────────────────────────────────────
         st.header("Prediction Results")
         r1, r2 = st.columns(2)
 

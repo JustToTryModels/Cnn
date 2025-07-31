@@ -159,7 +159,7 @@ if uploaded_file:
         proc_show = proc_disp_img.resize(DISP, Image.NEAREST)
 
         # ── Row 1 : images + arrow ───────────────────────────────────────────
-        st.header("🖼️ Image Analysis")
+        st.header("1. 🖼️ Image Analysis")
         col1, col_arrow, col2 = st.columns([3, 1, 3])   # ← added middle column for arrow
 
         with col1:
@@ -192,12 +192,12 @@ if uploaded_file:
                     unsafe_allow_html=True)
 
         # ── Row 2 : results ─────────────────────────────────────────────────
-        st.header("✨ Prediction Results")
+        st.header("2. ✨ Prediction Results")
         # Create three columns: content, divider, content
         r1, r_divider, r2 = st.columns([2, 0.2, 2])
 
         with r1:
-            st.subheader("1. Top Prediction")
+            st.subheader("2.1. Top Prediction")
             st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
 
@@ -209,7 +209,7 @@ if uploaded_file:
             )
 
         with r2:
-            st.subheader("2. Confidence Scores")
+            st.subheader("2.2. Confidence Scores")
             order  = np.argsort(preds)[::-1]
             names  = [class_names[i] for i in order]
             probs  = preds[order]

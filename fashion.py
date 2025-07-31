@@ -32,8 +32,8 @@ st.markdown(
     transition:transform .2s ease,box-shadow .2s ease;
 }
 [data-testid="stFileUploader"] button,
-[data-testid="stFileUploader"] button:focus,
 [data-testid="stFileUploader"] button:hover,
+[data-testid="stFileUploader"] button:focus,
 [data-testid="stFileUploader"] button:active,
 [data-testid="stFileUploader"] button:visited,
 [data-testid="stFileUploader"] button *{color:white!important;}
@@ -60,14 +60,15 @@ st.markdown(
     padding-right:10px;
 }
 
-/* 3.  DELETE (×) BUTTON — now shares the gradient style ----------------------*/
+/* 3.  DELETE (×) BUTTON — gradient colour, pill shape -----------------------*/
 [data-testid="stFileUploaderFile"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     border:none;
-    border-radius:50%;
-    padding:4px;
+    border-radius:25px;            /*  <- pill (matches Browse button)  */
+    padding:4px 8px;
     cursor:pointer;
     transition:transform .2s ease,box-shadow .2s ease;
+    display:flex;align-items:center;justify-content:center;
 }
 [data-testid="stFileUploaderFile"] button:hover{
     transform:scale(1.05);
@@ -76,9 +77,7 @@ st.markdown(
 [data-testid="stFileUploaderFile"] button:active{transform:scale(.92);}
 
 /*  × icon colour — always white                                              */
-[data-testid="stFileUploaderFile"] button svg{
-    fill:white!important;
-}
+[data-testid="stFileUploaderFile"] button svg{fill:white!important;}
 
 /* Chip focus outline ---------------------------------------------------------*/
 [data-testid="stFileUploaderFile"]:focus-within{
@@ -134,7 +133,7 @@ st.sidebar.header("About")
 st.sidebar.info(
     "**Model**: CNN with batch norm & dropout  \n"
     "**Dataset**: Fashion-MNIST  \n"
-    "**Frameworks**: TensorFlow/Keras  &  Streamlit  \n"
+    "**Frameworks**: TensorFlow/Keras & Streamlit  \n"
     "**Code**: [GitHub](https://github.com/JustToTryModels/Cnn)"
 )
 

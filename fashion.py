@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 import requests
 from io import BytesIO
+import tempfile # <--- Import the tempfile library
 
 # --- Configuration ---
 st.set_page_config(
@@ -15,31 +16,44 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# --- Model Loading ---
+# --- Model Loading (Corrected Version) ---
 # We use st.cache_resource to load the model only once and cache it.
 @st.cache_resource
 def load_keras_model():
     """
     Loads the pre-trained Keras model from a GitHub URL.
-    Uses caching to avoid reloading the model on every interaction.
+    This version saves the model to a temporary file before loading,
+    as tf.keras.models.load_model requires a file path.
     """
     # The URL to the raw model file on GitHub
     model_url = "https://github.com/JustToTryModels/Cnn/raw/main/Model/fashion_mnist_best_model.keras"
     
     try:
         # Download the model file
-        response = requests.get(model_url)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        
-        # Load the model from the downloaded content
-        model_file = BytesIO(response.content)
-        model = tf.keras.models.load_model(model_file)
+        with requests.get(model_url, stream=True) as r:
+            r.raise_for_status()
+            
+            # Create a temporary file to save the model
+            # 'delete=False' is important to keep the file open for loading
+            with tempfile.NamedTemporaryFile(suffix=".keras", delete=False) as tmp_file:
+                # Write the model content from the request to the temporary file
+                for chunk in r.iter_content(chunk_size=8192):
+                    tmp_file.write(chunk)
+                
+                # Get the path of the temporary file
+                tmp_file_path = tmp_file.name
+
+        # Now, load the model from the temporary file path
+        model = tf.keras.models.load_model(tmp_file_path)
         return model
+
     except requests.exceptions.RequestException as e:
         st.error(f"Error downloading the model: {e}")
         return None
     except Exception as e:
         st.error(f"Error loading the model: {e}")
+        # Add the specific traceback to help debug in the Streamlit logs
+        st.exception(e) 
         return None
 
 model = load_keras_model()
@@ -94,34 +108,34 @@ st.sidebar.info("""
 
 uploaded_file = st.file_uploader("Choose an image of a fashion item...", type=["jpg", "jpeg", "png"])
 
-if uploaded_file is not None and model is not None:
-    # Display the uploaded image
-    image = Image.open(uploaded_file)
-    col1, col2 = st.columns(2)
-    with col1:
-        st.image(image, caption="Uploaded Image", use_column_width=True)
-    
-    # Preprocess the image and make a prediction
-    with st.spinner('Classifying...'):
-        processed_image = preprocess_image(image)
-        prediction = model.predict(processed_image)
-        predicted_class_index = np.argmax(prediction)
-        predicted_class_name = class_names[predicted_class_index]
-        confidence = np.max(prediction) * 100
+if uploaded_file is not None:
+    if model is not None:
+        # Display the uploaded image
+        image = Image.open(uploaded_file)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(image, caption="Uploaded Image", use_column_width=True)
+        
+        # Preprocess the image and make a prediction
+        with st.spinner('Classifying...'):
+            processed_image = preprocess_image(image)
+            prediction = model.predict(processed_image)
+            predicted_class_index = np.argmax(prediction)
+            predicted_class_name = class_names[predicted_class_index]
+            confidence = np.max(prediction) * 100
 
-    # Display the prediction result
-    with col2:
-        st.subheader("Prediction Result")
-        st.success(f"This looks like a **{predicted_class_name}**.")
-        st.write(f"Confidence: **{confidence:.2f}%**")
+        # Display the prediction result
+        with col2:
+            st.subheader("Prediction Result")
+            st.success(f"This looks like a **{predicted_class_name}**.")
+            st.write(f"Confidence: **{confidence:.2f}%**")
 
-        st.subheader("Prediction Probabilities")
-        # Create a neat table for probabilities
-        prob_data = {
-            "Fashion Item": class_names,
-            "Probability": [f"{p*100:.2f}%" for p in prediction[0]]
-        }
-        st.dataframe(prob_data, use_container_width=True)
-
-elif model is None:
-    st.error("Model could not be loaded. Please check the logs or contact the administrator.")
+            st.subheader("Prediction Probabilities")
+            # Create a neat table for probabilities
+            prob_data = {
+                "Fashion Item": class_names,
+                "Probability": [f"{p*100:.2f}%" for p in prediction[0]]
+            }
+            st.dataframe(prob_data, use_container_width=True)
+    else:
+        st.error("The model is not available. Please check the deployment logs.")

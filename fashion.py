@@ -185,8 +185,12 @@ if uploaded_file:
         st.header("Prediction Results")
         r1, r2 = st.columns(2)
 
-        # SWAPPED: Confidence Scores on the left, Top Prediction on the right
         with r1:
+            st.subheader("Top Prediction")
+            st.success(f"This looks like a **{top_name}**.")
+            st.write(f"Confidence: **{top_conf:.2f}%**")
+
+        with r2:
             st.subheader("Confidence Scores")
             order  = np.argsort(preds)[::-1]
             names  = [class_names[i] for i in order]
@@ -202,11 +206,5 @@ if uploaded_file:
                 ax.text(w+0.01, bar.get_y()+bar.get_height()/2,
                         f"{w:.1%}", va="center")
             st.pyplot(fig)
-
-        with r2:
-            st.subheader("Top Prediction")
-            st.success(f"This looks like a **{top_name}**.")
-            st.write(f"Confidence: **{top_conf:.2f}%**")
-
     else:
         st.error("The model is not available. Please check the deployment logs.")

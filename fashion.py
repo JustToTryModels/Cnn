@@ -32,15 +32,23 @@ st.markdown("""
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* --- NEW RULE: KEEP TEXT **ALWAYS** WHITE --- */
+[data-testid="stFileUploader"] button,
+[data-testid="stFileUploader"] button:focus,
+[data-testid="stFileUploader"] button:hover,
+[data-testid="stFileUploader"] button:active,
+[data-testid="stFileUploader"] button:visited,
+[data-testid="stFileUploader"] button * {
+    color: white !important;   /* Force white text in every state */
+}
+
 [data-testid="stFileUploader"] button:hover {
     transform: scale(1.05);
     box-shadow: 0px 5px 15px rgba(229, 46, 113, 0.4);
-    color: white !important;
 }
 
 [data-testid="stFileUploader"] button:active {
     transform: scale(0.98);
-    color: white !important;
 }
 
 /* 2. STYLE FOR THE FILE 'CHIP' THAT APPEARS AFTER UPLOAD */
@@ -77,13 +85,11 @@ st.markdown("""
     fill: #ff8a00;
 }
 
-/* --- THE DEFINITIVE FIX FOR THE FOCUS STATE --- */
-/* This rule applies when the file chip (or anything inside it) gets focus */
+/* --- THE DEFINITIVE FIX FOR THE FOCUS STATE OF THE CHIP --- */
 [data-testid="stFileUploaderFile"]:focus-within {
     box-shadow: 0 0 0 2px rgba(229, 46, 113, 0.6); /* Adds a pink glow */
     outline: none; /* Removes the default blue/red browser outline */
 }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -139,9 +145,9 @@ st.markdown("""💡 Tip: For best results, use centered images with plain backgr
 
 st.sidebar.header("About")
 st.sidebar.info("""
-    **Model:** Advanced CNN with Batch Normalization and Dropout.
-    **Dataset:** Fashion MNIST
-    **Frameworks:** TensorFlow/Keras & Streamlit
+    **Model:** Advanced CNN with Batch Normalization and Dropout.  
+    **Dataset:** Fashion MNIST  
+    **Frameworks:** TensorFlow/Keras & Streamlit  
     **Source Code:** [GitHub Repository](https://github.com/JustToTryModels/Cnn)
 """)
 

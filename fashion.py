@@ -193,12 +193,20 @@ if uploaded_file:
 
         # ── Row 2 : results ─────────────────────────────────────────────────
         st.header("✨ Prediction Results")
-        r1, r2 = st.columns(2)
+        # Create three columns: content, divider, content
+        r1, r_divider, r2 = st.columns([2, 0.2, 2])
 
         with r1:
             st.subheader("1. Top Prediction")
             st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
+
+        # Add the vertical line in the middle column
+        with r_divider:
+            st.markdown(
+                "<div style='border-left: 1px solid #6E6E6E; height: 350px; margin: auto;'></div>",
+                unsafe_allow_html=True,
+            )
 
         with r2:
             st.subheader("2. Confidence Scores")

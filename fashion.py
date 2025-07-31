@@ -54,20 +54,25 @@ st.markdown(
     padding:4px 12px;
     transition:box-shadow .2s ease;
 }
+
+/*    2a. File-name  ----------------------------------------------------------*/
 [data-testid="stFileUploaderFile"]>div:first-of-type{
     color:white!important;
     font-size:.9em;
     padding-right:10px;
 }
 
-/* NEW: force the filename *and* file-size spans to white --------------------*/
-[data-testid="stFileUploaderFile"] span{color:white!important;}
+/*    2b. File-size (“5.4 KB”, “1.2 MB” …)  ->  make it white  ---------------*/
+[data-testid="stFileUploaderFile"]>div:first-of-type>div:nth-child(2),
+[data-testid="stFileUploaderFile"] span{
+    color:#ffffff !important;
+}
 
 /* 3.  DELETE (×) BUTTON — gradient colour, pill shape -----------------------*/
 [data-testid="stFileUploaderFile"] button{
     background:linear-gradient(90deg,#ff8a00,#e52e71);
     border:none;
-    border-radius:25px;
+    border-radius:25px;            /*  <- pill (matches Browse button)  */
     padding:4px 8px;
     cursor:pointer;
     transition:transform .2s ease,box-shadow .2s ease;
@@ -78,6 +83,8 @@ st.markdown(
     box-shadow:0 5px 15px rgba(229,46,113,.4);
 }
 [data-testid="stFileUploaderFile"] button:active{transform:scale(.92);}
+
+/*  × icon colour — always white                                              */
 [data-testid="stFileUploaderFile"] button svg{fill:white!important;}
 
 /* Chip focus outline ---------------------------------------------------------*/
@@ -121,6 +128,7 @@ def preprocess_image(image: Image.Image):
     gray  = image.convert("L")
     small = gray.resize((28, 28), Image.Resampling.LANCZOS)
     inv   = ImageOps.invert(small)
+
     arr = np.asarray(inv).astype("float32")/255.0
     return inv, arr.reshape(1, 28, 28, 1)
 
@@ -153,13 +161,15 @@ if uploaded_file:
             top_name   = class_names[top_idx]
             top_conf   = preds[top_idx] * 100
 
+        # identical display size
         DISP = (300, 300)
         orig_show = orig_img.resize(DISP, Image.Resampling.LANCZOS)
         proc_show = proc_disp_img.resize(DISP, Image.NEAREST)
 
-        # Row 1 : images -------------------------------------------------------
+        # ── Row 1 : images ───────────────────────────────────────────────────
         st.header("Image Analysis")
         col1, col2 = st.columns(2)
+
         with col1:
             c1, c2, c3 = st.columns([1,3,1])
             with c2:
@@ -167,6 +177,7 @@ if uploaded_file:
                 st.markdown(
                     '<p style="text-align:center;">Original Uploaded Image</p>',
                     unsafe_allow_html=True)
+
         with col2:
             c1, c2, c3 = st.columns([1,3,1])
             with c2:
@@ -178,13 +189,15 @@ if uploaded_file:
         st.markdown('<hr style="height:1px;border:none;background:#6E6E6E;">',
                     unsafe_allow_html=True)
 
-        # Row 2 : results ------------------------------------------------------
+        # ── Row 2 : results ─────────────────────────────────────────────────
         st.header("Prediction Results")
         r1, r2 = st.columns(2)
+
         with r1:
             st.subheader("Top Prediction")
             st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
+
         with r2:
             st.subheader("Confidence Scores")
             order  = np.argsort(preds)[::-1]

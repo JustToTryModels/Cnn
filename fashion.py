@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -160,8 +159,8 @@ if uploaded_file:
 
         # ── Row 1 : images ───────────────────────────────────────────────────
         st.header("🖼️ Image Analysis")
-        # Create columns with a narrow one in the middle for the vertical line
-        col1, v_line_col1, col2 = st.columns([5, 0.5, 5])
+        # add a tiny middle column for the vertical line
+        col1, col_vline, col2 = st.columns([1, 0.03, 1])
 
         with col1:
             c1, c2, c3 = st.columns([1,3,1])
@@ -171,10 +170,10 @@ if uploaded_file:
                     '<p style="text-align:center;">Original Uploaded Image</p>',
                     unsafe_allow_html=True)
 
-        # Add the vertical line in the middle column
-        with v_line_col1:
+        # vertical line
+        with col_vline:
             st.markdown(
-                "<div style='writing-mode: vertical-rl; text-orientation: mixed; border-left: 2px solid #6E6E6E; height: 350px; margin: 0 auto;'></div>",
+                "<div style='height:100%; border-left:1px solid #6E6E6E;'></div>",
                 unsafe_allow_html=True
             )
 
@@ -191,18 +190,17 @@ if uploaded_file:
 
         # ── Row 2 : results ─────────────────────────────────────────────────
         st.header("✨ Prediction Results")
-        # Create a second set of columns with a vertical line
-        r1, v_line_col2, r2 = st.columns([5, 0.5, 5])
+        # another middle column for vertical line
+        r1, r_vline, r2 = st.columns([1, 0.03, 1])
 
         with r1:
             st.subheader("Top Prediction")
             st.success(f"This looks like a **{top_name}**.")
             st.write(f"Confidence: **{top_conf:.2f}%**")
 
-        # Add the second vertical line
-        with v_line_col2:
+        with r_vline:
             st.markdown(
-                "<div style='writing-mode: vertical-rl; text-orientation: mixed; border-left: 2px solid #6E6E6E; height: 450px; margin: 0 auto;'></div>",
+                "<div style='height:100%; border-left:1px solid #6E6E6E;'></div>",
                 unsafe_allow_html=True
             )
 

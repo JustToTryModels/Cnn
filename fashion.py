@@ -158,9 +158,9 @@ if uploaded_file:
         orig_show = orig_img.resize(DISP, Image.Resampling.LANCZOS)
         proc_show = proc_disp_img.resize(DISP, Image.NEAREST)
 
-        # ── Row 1 : images ───────────────────────────────────────────────────
+        # ── Row 1 : images + arrow ───────────────────────────────────────────
         st.header("🖼️ Image Analysis")
-        col1, col2 = st.columns(2)
+        col1, col_arrow, col2 = st.columns([3, 1, 3])   # ← added middle column for arrow
 
         with col1:
             c1, c2, c3 = st.columns([1,3,1])
@@ -169,6 +169,16 @@ if uploaded_file:
                 st.markdown(
                     '<p style="text-align:center;">Original Uploaded Image</p>',
                     unsafe_allow_html=True)
+
+        # ----------  Arrow (new) ----------
+        with col_arrow:
+            st.markdown(
+                "<h1 style='text-align:center; font-size: 64px; margin-top: 100px;'>"
+                "➡️"
+                "</h1>",
+                unsafe_allow_html=True,
+            )
+        # -----------------------------------
 
         with col2:
             c1, c2, c3 = st.columns([1,3,1])

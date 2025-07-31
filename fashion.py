@@ -16,9 +16,10 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-# --- Custom CSS with the Hover Fix ---
+# --- Custom CSS for ALL File Uploader States ---
 st.markdown("""
 <style>
+/* 1. STYLE FOR THE INITIAL 'BROWSE FILES' BUTTON */
 [data-testid="stFileUploader"] button {
     background: linear-gradient(90deg, #ff8a00, #e52e71);
     color: white;
@@ -34,13 +35,47 @@ st.markdown("""
 [data-testid="stFileUploader"] button:hover {
     transform: scale(1.05);
     box-shadow: 0px 5px 15px rgba(229, 46, 113, 0.4);
-    color: white !important; /* <--- THIS IS THE FIX: Keep text white on hover */
+    color: white !important;
 }
 
 [data-testid="stFileUploader"] button:active {
     transform: scale(0.98);
-    color: white !important; /* <--- Also ensure text stays white on click */
+    color: white !important;
 }
+
+/* 2. STYLE FOR THE FILE 'CHIP' THAT APPEARS AFTER UPLOAD */
+[data-testid="stFileUploaderFile"] {
+    display: flex;
+    align-items: center;
+    background-color: #4A4A4A; /* A neutral dark gray for the chip */
+    color: white;
+    border-radius: 25px;
+    padding: 4px 12px;
+}
+
+/* 3. STYLE FOR THE FILENAME TEXT INSIDE THE CHIP */
+[data-testid="stFileUploaderFile"] > div:first-of-type {
+    color: white;
+    font-size: 0.9em;
+    padding-right: 10px; /* Space between filename and delete button */
+}
+
+/* 4. STYLE FOR THE DELETE 'X' BUTTON INSIDE THE CHIP */
+[data-testid="stFileUploaderFile"] button {
+    background-color: transparent;
+    border: none;
+}
+
+/* 5. STYLE FOR THE 'X' ICON ITSELF TO BE WHITE */
+[data-testid="stFileUploaderFile"] button svg {
+    fill: white;
+    transition: fill 0.2s ease;
+}
+
+[data-testid="stFileUploaderFile"] button:hover svg {
+    fill: #ff8a00; /* Change icon color on hover for feedback */
+}
+
 </style>
 """, unsafe_allow_html=True)
 

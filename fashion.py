@@ -182,7 +182,7 @@ if uploaded_file:
                     unsafe_allow_html=True)
 
         # ── Row 2 : results ─────────────────────────────────────────────────
-        st.header("Prediction Results")
+        st.header("🤖 Prediction Results")
         r1, r2 = st.columns(2)
 
         with r1:
